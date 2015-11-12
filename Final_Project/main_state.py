@@ -150,13 +150,13 @@ def handle_events():
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global IsOver
 
-
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
-            game_framework.change_state(title_state)
+            if IsOver:
+                game_framework.change_state(title_state)
         elif not IsOver:
             if event.type == SDL_KEYDOWN:
                 if event.key == SDLK_LEFT:
@@ -247,12 +247,12 @@ def check():
     global Selidx_1, Selidx_2, Selidx_3, SelIdx
     global IsOver
 
-    if DownCnt > 0:
+    if not IsOver and DownCnt > 0:
         for n in range(0, 3):
             for j in range(9, -1, -1):
                 for i in range(0, 7):
                     if (Stair_X[n] + (i * 49) - 25) < boy.x < (Stair_X[n] + (i * 49) + 25) and Stair_Y[n] + ((9 - j) * 28) - 14 < boy.y - 70 <= Stair_Y[n] + ((9 - j) * 28) + 14:
-                        if stairs.normal_stair[SelIdx[n]][j][i] == 0:
+                        if stairs.SelStair[title_state.sel][SelIdx[n]][j][i] == 0:
                             IsOver = True
 
         for i in range(0, 3):
