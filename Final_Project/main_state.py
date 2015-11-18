@@ -36,6 +36,10 @@ stair3_Y = None
 Stair_X = None
 Stair_Y = None
 
+HeroFlag = -1
+LifeFlag = -1
+StopFlag = -1
+
 DownCnt = None
 
 
@@ -182,9 +186,9 @@ def handle_events():
                             bg1_Y = bg2_Y + 1516
                         elif (bg2_Y + 758) < -1:
                             bg2_Y = bg1_Y + 1516
-                        bg2_Y -= 28
-                        bg1_Y -= 28
-                        bg_Y -= 28
+                        bg2_Y -= 20
+                        bg1_Y -= 20
+                        bg_Y -= 20
                     if Stair_Y[1] + 242 < 0:
                         SelIdx[1] = random.randint(0, 9)
                         Stair_Y[1] = Stair_Y[0] + (10 * 28)
@@ -220,9 +224,9 @@ def handle_events():
                             bg1_Y = bg2_Y + 1516
                         elif (bg2_Y + 758) < -1:
                             bg2_Y = bg1_Y + 1516
-                        bg2_Y -= 28
-                        bg1_Y -= 28
-                        bg_Y -= 28
+                        bg2_Y -= 20
+                        bg1_Y -= 20
+                        bg_Y -= 20
                     if Stair_Y[1] + 242 < 0:
                         SelIdx[1] = random.randint(0, 9)
                         Stair_Y[1] = Stair_Y[0] + (10 * 28)
@@ -232,9 +236,7 @@ def handle_events():
                     elif Stair_Y[0] + 242 < 0:
                         SelIdx[0] = random.randint(0, 9)
                         Stair_Y[0] = Stair_Y[2] + (10 * 28)
-
-    check()
-
+        check()
 
 
 def update():

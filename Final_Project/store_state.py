@@ -13,6 +13,7 @@ Item_Hero = None
 Item_Life = None
 Item_Stop = None
 GameStart = None
+
 sel = None
 sel_x, sel_y = None, None
 
@@ -43,7 +44,7 @@ def exit():
 
 
 def handle_events():
-    global sel, sel_x, sel_y
+    global sel, sel_x, sel_y, Item_Hero, Item_Life, Item_Stop
 
     events = get_events()
     for event in events:
@@ -64,6 +65,28 @@ def handle_events():
                 elif event.key == SDLK_SPACE:
                     if sel_y == 90:
                         game_framework.change_state(main_state)
+                    elif sel_y == 170:
+                        if sel_x == 330:
+                            main_state.HeroFlag *= -1
+                            if main_state.HeroFlag == 1:
+                                Item_Hero = load_image('usedItem_Hero.png')
+                            else:
+                                Item_Hero = load_image('Item_Hero.png')
+                            pass
+                        elif sel_x == 440:
+                            main_state.LifeFlag *= -1
+                            if main_state.LifeFlag == 1:
+                                Item_Life = load_image('usedItem_Life.png')
+                            else:
+                                Item_Life = load_image('Item_Life.png')
+                            pass
+                        elif sel_x == 550:
+                            main_state.StopFlag *= -1
+                            if main_state.StopFlag == 1:
+                                Item_Stop = load_image('usedItem_Stop.png')
+                            else:
+                                Item_Stop = load_image('Item_Stop.png')
+                            pass
                 elif event.key == SDLK_DOWN:
                     if sel_y > 90:
                         sel_x = 460
