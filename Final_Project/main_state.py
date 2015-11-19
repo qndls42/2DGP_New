@@ -42,7 +42,6 @@ StopFlag = -1
 
 DownCnt = None
 
-
 class Boy:
     image = None
 
@@ -108,6 +107,7 @@ def enter():
     global stairImage, SelIdx, Selidx_1, Selidx_2, Selidx_3
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global DownCnt, IsOver
+    global Num
 
     IsOver = False
     DownCnt = 0
