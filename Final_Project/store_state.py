@@ -13,13 +13,14 @@ Item_Hero = None
 Item_Life = None
 Item_Stop = None
 GameStart = None
-Num = None
+Num_image = None
 TotalMoney = None
 sel = None
 sel_x, sel_y = None, None
 
+
 def enter():
-    global title_bg, store, Item_Hero, Item_Life, Item_Stop, sel, sel_x, sel_y, GameStart, Num, TotalMoney
+    global title_bg, store, Item_Hero, Item_Life, Item_Stop, sel, sel_x, sel_y, GameStart, Num_image, TotalMoney
     title_bg = load_image('menu.png')
     store = load_image('store.png')
     Item_Hero = load_image('Item_Hero.png')
@@ -27,14 +28,14 @@ def enter():
     Item_Stop = load_image('Item_Stop.png')
     GameStart = load_image('GameStart.png')
     sel = load_image('select.png')
-    Num = load_image('Num_create.png')
+    Num_image = load_image('Num_create.png')
     TotalMoney = 100
     sel_x, sel_y = 330, 170
     pass
 
 
 def exit():
-    global title_bg, Item_Hero, Item_Life, Item_Stop, store, sel, GameStart
+    global title_bg, Item_Hero, Item_Life, Item_Stop, store, sel, GameStart, Num_image
     del(title_bg)
     del(store)
     del(Item_Hero)
@@ -42,6 +43,7 @@ def exit():
     del(Item_Stop)
     del(GameStart)
     del(sel)
+    del(Num_image)
     # close_canvas()
     pass
 
@@ -113,7 +115,8 @@ def draw():
     Item_Stop.draw(511, 200)
     GameStart.draw(401, 120)
     sel.draw(sel_x, sel_y)
-    Num.clip_draw(0, 0, 21, 25, 401, 350)
+    for i in range(main_state.scorecheck()):
+        Num_image.clip_draw(i * 21, 0, 21, 25, 422 - (i * 21), 350)
     update_canvas()
     pass
 

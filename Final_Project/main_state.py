@@ -6,6 +6,7 @@ from pico2d import *
 
 import game_framework
 import title_state
+import store_state
 import stairs
 
 name = "MainState"
@@ -260,6 +261,17 @@ def check():
         for i in range(0, 3):
             if boy.x < (Stair_X[i] - 25) or boy.x > (Stair_X[i] + 318):
                 IsOver = True
+
+
+def scorecheck():
+    num = store_state.TotalMoney
+    count = 0
+    while num > 0:
+        num = int(num / 10)
+        count += 1
+    return count
+    pass
+
 
 
 def draw():
