@@ -7,6 +7,7 @@ from pico2d import *
 import game_framework
 import title_state
 import store_state
+import start_state
 import stairs
 
 name = "MainState"
@@ -37,9 +38,9 @@ stair3_Y = None
 Stair_X = None
 Stair_Y = None
 
-HeroFlag = -1
-LifeFlag = -1
-StopFlag = -1
+HeroFlag = None
+LifeFlag = None
+StopFlag = None
 
 DownCnt = None
 
@@ -108,7 +109,7 @@ def enter():
     global stairImage, SelIdx, Selidx_1, Selidx_2, Selidx_3
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global DownCnt, IsOver
-    global Num
+    # global Num
 
     IsOver = False
     DownCnt = 0
@@ -131,6 +132,7 @@ def enter():
     background1_1 = load_image('background1.png')
     background1_2 = load_image('background1.png')
     stairImage = load_image('stair.png')
+
     pass
 
 
@@ -263,15 +265,16 @@ def check():
                 IsOver = True
 
 
-def scorecheck():
-    num = store_state.TotalMoney
+def score_check():
+    store_state.Num = []
+    temp_num = start_state.TotalMoney
     count = 0
-    while num > 0:
-        num = int(num / 10)
+    while temp_num > 0:
+        store_state.Num.append(int(temp_num % 10))
+        temp_num = int(temp_num / 10)
         count += 1
     return count
     pass
-
 
 
 def draw():

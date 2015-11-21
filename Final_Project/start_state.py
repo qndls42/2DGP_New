@@ -5,20 +5,24 @@ import title_state
 
 name = "StartState"
 image = None
+TotalMoney = None
 logo_time = 0.0
 
 
 def enter():
-    global image
+    global image, TotalMoney
     open_canvas()
+    TotalMoney = 300
     image = load_image('kpu_credit.png')
     pass
+
 
 def exit():
     global image
     del(image)
     close_canvas()
     pass
+
 
 def update():
     global logo_time
@@ -30,12 +34,14 @@ def update():
     logo_time += 0.01
     pass
 
+
 def draw():
     global image
     clear_canvas()
     image.draw(400, 300)
     update_canvas()
     pass
+
 
 def handle_events():
     events = get_events()
