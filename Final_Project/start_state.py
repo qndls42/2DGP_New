@@ -11,7 +11,7 @@ logo_time = 0.0
 
 def enter():
     global image, TotalMoney
-    open_canvas()
+    open_canvas(sync=True)
     TotalMoney = 300
     image = load_image('kpu_credit.png')
     pass

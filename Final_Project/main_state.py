@@ -12,7 +12,6 @@ import stairs
 
 name = "MainState"
 
-
 IsOver = None
 
 boy = None
@@ -24,9 +23,9 @@ bg_Y = None
 bg1_Y = None
 bg2_Y = None
 stairImage = None
-Selidx_1 = None
-Selidx_2 = None
-Selidx_3 = None
+Selidx_1 = None     # 계단
+Selidx_2 = None     # 계단
+Selidx_3 = None     # 계단
 SelIdx = None
 
 stair1_X = None
@@ -42,7 +41,27 @@ HeroFlag = None
 LifeFlag = None
 StopFlag = None
 
+time_frame = None
+
 DownCnt = None
+
+
+class Time:
+    gauge_image = None
+
+    def __init__(self):
+        self.x, self.y = 400, 500
+        self.width = 158
+        self.sub = 1
+        self.gauge_image = load_image('time_gauge.png')
+
+    def update(self):
+        if not IsOver and DownCnt > 0:
+            self.width -= self.sub
+
+    def draw(self):
+        self.gauge_image.clip_draw_to_origin(0, 0, self.width, 26, 242, 500)
+
 
 class Boy:
     image = None
@@ -103,16 +122,19 @@ class Boy:
 
 
 def enter():
-    global boy
+    global boy, time
     global background, background1_1, background1_2
     global bg_Y, bg1_Y, bg2_Y
     global stairImage, SelIdx, Selidx_1, Selidx_2, Selidx_3
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global DownCnt, IsOver
+    global time_frame
     # global Num
 
     IsOver = False
     DownCnt = 0
+
+    stairImage = load_image('stair.png')
     stair1_X, stair1_Y = 250, 150
     stair2_X, stair2_Y = 250, 430
     stair3_X, stair3_Y = 250, 710
@@ -125,20 +147,24 @@ def enter():
     SelIdx = [Selidx_1, Selidx_2, Selidx_3]
 
     boy = Boy()
+
     bg_Y = 650
     bg1_Y = bg_Y + 1458
     bg2_Y = bg1_Y + 1516
     background = load_image('background.png')
     background1_1 = load_image('background1.png')
     background1_2 = load_image('background1.png')
-    stairImage = load_image('stair.png')
+
+    time = Time()
+    time_frame = load_image('time_frame.png')
 
     pass
 
 
 def exit():
-    global boy
-    del (boy)
+    global boy, time
+    del(boy)
+    del(time)
     pass
 
 
@@ -239,30 +265,36 @@ def handle_events():
                     elif Stair_Y[0] + 242 < 0:
                         SelIdx[0] = random.randint(0, 9)
                         Stair_Y[0] = Stair_Y[2] + (10 * 28)
-        check()
+        over_check()
 
 
 def update():
     boy.update()
+    time.update()
     pass
 
 
-def check():
+def over_check():
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global Selidx_1, Selidx_2, Selidx_3, SelIdx
-    global IsOver
+    global IsOver, DownCnt
 
     if not IsOver and DownCnt > 0:
         for n in range(0, 3):
             for j in range(9, -1, -1):
                 for i in range(0, 7):
                     if (Stair_X[n] + (i * 49) - 25) < boy.x < (Stair_X[n] + (i * 49) + 25) and Stair_Y[n] + ((9 - j) * 28) - 14 < boy.y - 70 <= Stair_Y[n] + ((9 - j) * 28) + 14:
-                        if stairs.SelStair[title_state.sel][SelIdx[n]][j][i] == 0:
+                        if stairs.SelStair[title_state.sel][SelIdx[n]][j][i] == 0:      # 제대로 된 계단에 안올라간경우
                             IsOver = True
+                            DownCnt -= 1
+                            print(DownCnt)
+        if boy.x < (Stair_X[n] - 25) or boy.x > (Stair_X[n] + 318):     # 아예 계단 밖으로 나간 경우
+            IsOver = True
+            DownCnt -= 1
+            print(DownCnt)
 
-        for i in range(0, 3):
-            if boy.x < (Stair_X[i] - 25) or boy.x > (Stair_X[i] + 318):
-                IsOver = True
+        if time.width < 0:
+            IsOver = True
 
 
 def score_check():
@@ -285,6 +317,8 @@ def draw():
 
     stairs.draw()
     boy.draw()
+    time.draw()
+    time_frame.draw(400, 513)
     update_canvas()
-    delay(0.1)
+    delay(0.08)
     pass
