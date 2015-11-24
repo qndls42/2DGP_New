@@ -2,13 +2,14 @@ __author__ = 'xnote'
 
 import game_framework
 import main_state
-# import title_state
+import title_state
 import start_state
+import gameover_state
 from pico2d import *
 
 
-name = "TitleState"
-title_bg = None
+name = "StoreState"
+# title_bg = None
 store = None
 Item_Hero = None
 Item_Life = None
@@ -23,10 +24,10 @@ sel_x, sel_y = None, None
 
 
 def enter():
-    global title_bg, store, Item_Hero, Item_Life, Item_Stop, sel, sel_x, sel_y, GameStart, Num_image, Num, coin_image
+    global store, Item_Hero, Item_Life, Item_Stop, sel, sel_x, sel_y, GameStart, Num_image, Num, coin_image
     global coin_sound
 
-    title_bg = load_image('menu.png')
+    # title_bg = load_image('title_bg.png')
     store = load_image('store.png')
     Item_Hero = load_image('usedItem_Hero.png')
     Item_Life = load_image('usedItem_Life.png')
@@ -49,16 +50,14 @@ def enter():
 
 
 def exit():
-    global title_bg, Item_Hero, Item_Life, Item_Stop, store, sel, GameStart, Num_image
+    global Item_Hero, Item_Life, Item_Stop, store, sel, GameStart
 
-    del(title_bg)
+    # del(title_bg)
     del(store)
     del(Item_Hero)
     del(Item_Life)
     del(Item_Stop)
     del(GameStart)
-    del(sel)
-    del(Num_image)
     # close_canvas()
     pass
 
@@ -123,7 +122,7 @@ def handle_events():
 
 def draw():
     clear_canvas()
-    title_bg.draw(400, 300)
+    title_state.title_bg.draw(400, 300)
     store.draw(400, 300)
 
     Item_Hero.draw(291, 225)
@@ -138,14 +137,14 @@ def draw():
     sel.draw(sel_x, sel_y) # 화살표
 
     #=================== 코인 출력
-    if main_state.score_check() == 0:
+    if main_state.score_check(start_state.TotalMoney) == 0:
         Num_image.clip_draw(0, 0, 21, 25, 400, 350)
         pass
     else:
-        for i in range(main_state.score_check()):
-            Num_image.clip_draw(Num[i] * 21, 0, 21, 25, (400 + int(main_state.score_check() / 2) * 21) - (i * 21), 350)
+        for i in range(main_state.score_check(start_state.TotalMoney)):
+            Num_image.clip_draw(Num[i] * 21, 0, 21, 25, (400 + int(main_state.score_check(start_state.TotalMoney) / 2) * 21) - (i * 21), 350)
 
-    coin_image.draw((400 + int(main_state.score_check() / 2) * 21) + 50, 350)
+    coin_image.draw((400 + int(main_state.score_check(start_state.TotalMoney) / 2) * 21) + 50, 350)
     update_canvas()
     pass
 

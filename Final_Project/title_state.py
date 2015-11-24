@@ -1,7 +1,6 @@
 __author__ = 'xnote'
 
 import game_framework
-import main_state
 import store_state
 from pico2d import *
 
@@ -13,9 +12,10 @@ right_sel = None
 mode = None
 sel = None
 
+
 def enter():
     global title_bg, left_sel, right_sel, mode, sel
-    title_bg = load_image('menu.png')
+    title_bg = load_image('title_bg.png')
     left_sel = load_image('Left_sel.png')
     right_sel = load_image('Right_sel.png')
     mode = load_image('normal.png')
@@ -24,8 +24,7 @@ def enter():
 
 
 def exit():
-    global title_bg, left_sel, right_sel
-    del(title_bg)
+    global left_sel, right_sel
     del(left_sel)
     del(right_sel)
     # close_canvas()

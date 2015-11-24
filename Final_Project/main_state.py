@@ -1,14 +1,19 @@
 __author__ = 'xnote'
 
-import random
-
 from pico2d import *
 
 import game_framework
 import title_state
 import store_state
 import start_state
+import gameover_state
 import stairs
+
+import random
+
+
+
+
 
 name = "MainState"
 
@@ -56,23 +61,25 @@ class Time:
         self.gauge_image = load_image('time_gauge.png')
 
     def update(self):
+        # print(self.width)
         if not IsOver and DownCnt > 0:
             self.width -= self.sub
 
     def draw(self):
-        self.gauge_image.clip_draw_to_origin(0, 0, self.width, 26, 242, 500)
+        self.gauge_image.clip_draw_to_origin(0, 0, self.width, 26, 243, 500)
 
 
 class Boy:
     image = None
 
-    RIGHT_STAND, LEFT_STAND, RIGHT_RUN, LEFT_RUN = 4, 3, 2, 1
+    RIGHT_STAND, LEFT_STAND, RIGHT_RUN, LEFT_RUN, DEAD = 4, 3, 2, 1, 0
 
     def __init__(self):
         self.x, self.y = 450, 200
         self.frame = 0
         self.run_frames = 0
         self.stand_frames = 0
+        self.dead_frames = 0
         self.state = self.LEFT_STAND
         self.image = load_image('player.png')
         self.dir = 1  # 왼쪽을 향하고 있는 상태 = 1
@@ -86,10 +93,6 @@ class Boy:
     def handle_left_stand(self):
         self.stand_frames += 1
 
-        # if self.stand_frames == 50:
-        #     self.state = self.LEFT_RUN
-        #     self.run_frames = 0
-
     def handle_right_run(self):
         self.run_frames += 1
         if self.run_frames == 3:
@@ -98,27 +101,42 @@ class Boy:
 
     def handle_right_stand(self):
         self.stand_frames += 1
-        # if self.stand_frames == 50:
-        #     self.state = self.RIGHT_RUN
-        #     self.run_frames = 0
+
+    def handle_dead(self):
+        if self.dead_frames == 9:
+            self.frame = -1
+        else:
+            self.dead_frames += 1
+        pass
 
     handle_state = {
         LEFT_RUN: handle_left_run,
         RIGHT_RUN: handle_right_run,
         LEFT_STAND: handle_left_stand,
-        RIGHT_STAND: handle_right_stand
+        RIGHT_STAND: handle_right_stand,
+        DEAD: handle_dead
     }
 
     def update(self):
         # fill here
-        self.frame = (self.frame + 1) % 6
+        if self.state == self.LEFT_RUN or self.state == self.RIGHT_RUN:
+            self.frame = self.run_frames % 6
+        elif self.state == self.LEFT_STAND or self.state == self.RIGHT_STAND:
+            self.frame = self.stand_frames % 7
+        elif self.state == self.DEAD and self.dead_frames != 9:     # 한번만 실행하기위해
+            self.frame = self.dead_frames % 9
+            pass
+
         self.handle_state[self.state](self)
 
     def draw(self):
         if self.state == self.LEFT_RUN or self.state == self.RIGHT_RUN:
             self.image.clip_draw(self.frame * 96, self.state * 148, 86, 136, self.x, self.y)
-        else:
+        elif self.state == self.LEFT_STAND or self.state == self.RIGHT_STAND:
             self.image.clip_draw(self.frame * 96, self.state * 145, 86, 136, self.x, self.y)
+        else:
+            self.image.clip_draw(self.frame * 96, self.state * 145, 86, 140, self.x, self.y)
+            pass
 
 
 def enter():
@@ -162,7 +180,8 @@ def enter():
 
 
 def exit():
-    global boy, time
+    global boy, time, background
+    del background
     del(boy)
     del(time)
     pass
@@ -187,9 +206,9 @@ def handle_events():
     for event in events:
         if event.type == SDL_QUIT:
             game_framework.quit()
-        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
-            if IsOver:
-                game_framework.change_state(title_state)
+        # elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
+        #     if IsOver:
+        #         game_framework.change_state(title_state)
         elif not IsOver:
             if event.type == SDL_KEYDOWN:
                 if event.key == SDLK_LEFT:
@@ -203,13 +222,8 @@ def handle_events():
                         for i in range(0, 3):
                             Stair_X[i] += 50
                             Stair_Y[i] -= 28
-                        # stair1_X += 50
-                        # stair1_Y -= 28
-                        # stair2_X += 50
-                        # stair2_Y -= 28
-                        # stair3_X += 50
-                        # stair3_Y -= 28
                         pass
+
                     if DownCnt > 1:
                         if (bg1_Y + 758) < -1:
                             bg1_Y = bg2_Y + 1516
@@ -218,6 +232,11 @@ def handle_events():
                         bg2_Y -= 20
                         bg1_Y -= 20
                         bg_Y -= 20
+                        if time.width < 316 - 25:
+                            time.width += 25
+                        elif 316 - 25 <= time.width <= 316:
+                            time.width = 316
+
                     if Stair_Y[1] + 242 < 0:
                         SelIdx[1] = random.randint(0, 9)
                         Stair_Y[1] = Stair_Y[0] + (10 * 28)
@@ -227,11 +246,12 @@ def handle_events():
                     elif Stair_Y[0] + 242 < 0:
                         SelIdx[0] = random.randint(0, 9)
                         Stair_Y[0] = Stair_Y[2] + (10 * 28)
-
-                    # check()
                     pass
                 elif event.key == SDLK_RIGHT:
                     DownCnt += 1
+                    boy.run_frames = 0
+                    boy.state = boy.RIGHT_RUN
+
                     if DownCnt == 1:
                         boy.x += 57
                         boy.y += 23
@@ -239,15 +259,8 @@ def handle_events():
                         for i in range(0, 3):
                             Stair_X[i] -= 50
                             Stair_Y[i] -= 28
-                        # stair1_X -= 50
-                        # stair1_Y -= 28
-                        # stair2_X -= 50
-                        # stair2_Y -= 28
-                        # stair3_X -= 50
-                        # stair3_Y -= 28
                         pass
-                    boy.run_frames = 0
-                    boy.state = boy.RIGHT_RUN
+
                     if DownCnt > 1:
                         if (bg1_Y + 758) < -1:
                             bg1_Y = bg2_Y + 1516
@@ -256,6 +269,11 @@ def handle_events():
                         bg2_Y -= 20
                         bg1_Y -= 20
                         bg_Y -= 20
+                        if time.width < 316 - 25:
+                            time.width += 25
+                        elif 316 - 25 <= time.width <= 316:
+                            time.width = 316
+
                     if Stair_Y[1] + 242 < 0:
                         SelIdx[1] = random.randint(0, 9)
                         Stair_Y[1] = Stair_Y[0] + (10 * 28)
@@ -265,16 +283,25 @@ def handle_events():
                     elif Stair_Y[0] + 242 < 0:
                         SelIdx[0] = random.randint(0, 9)
                         Stair_Y[0] = Stair_Y[2] + (10 * 28)
-        over_check()
+        elif IsOver and event.type == SDL_KEYDOWN and event.key == SDLK_LEFT:
+            print('run')
+
+
+
+        # over_check()
 
 
 def update():
     boy.update()
     time.update()
+    over_check()
+
+    if IsOver and boy.frame == -1:
+        game_framework.change_state(gameover_state)
     pass
 
 
-def over_check():
+def over_check():   # 게임 종료 체크
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global Selidx_1, Selidx_2, Selidx_3, SelIdx
     global IsOver, DownCnt
@@ -287,19 +314,21 @@ def over_check():
                         if stairs.SelStair[title_state.sel][SelIdx[n]][j][i] == 0:      # 제대로 된 계단에 안올라간경우
                             IsOver = True
                             DownCnt -= 1
-                            print(DownCnt)
+                            boy.state = boy.DEAD
+
         if boy.x < (Stair_X[n] - 25) or boy.x > (Stair_X[n] + 318):     # 아예 계단 밖으로 나간 경우
             IsOver = True
             DownCnt -= 1
-            print(DownCnt)
+            boy.state = boy.DEAD
 
-        if time.width < 0:
+        if time.width <= 0:
             IsOver = True
+            boy.state = boy.DEAD
 
 
-def score_check():
+def score_check(num):      # 게임 스코어 및 게임 머니 체크
     store_state.Num = []
-    temp_num = start_state.TotalMoney
+    temp_num = num
     count = 0
     while temp_num > 0:
         store_state.Num.append(int(temp_num % 10))
