@@ -297,6 +297,7 @@ def update():
     over_check()
 
     if IsOver and boy.frame == -1:
+        start_state.TotalMoney += DownCnt
         game_framework.change_state(gameover_state)
     pass
 
