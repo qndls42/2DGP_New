@@ -197,6 +197,7 @@ def handle_events():
     global stairImage, Selidx_1, Selidx_2, Selidx_3, SelIdx
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global IsOver
+    global HeroFlag, LifeFlag, StopFlag
 
     events = get_events()
     for event in events:
@@ -211,6 +212,11 @@ def handle_events():
                     boy.run_frames = 0
                     boy.state = boy.LEFT_RUN
                     DownCnt += 1
+
+                    if DownCnt % 20 == 0:
+                        print('run')
+                        time.sub += 1
+
                     if DownCnt == 1:
                         boy.x -= 57
                         boy.y += 23
@@ -248,6 +254,10 @@ def handle_events():
                     boy.run_frames = 0
                     boy.state = boy.RIGHT_RUN
 
+                    if DownCnt % 20 == 0:
+                        print('run')
+                        time.sub += 1
+
                     if DownCnt == 1:
                         boy.x += 57
                         boy.y += 23
@@ -279,15 +289,27 @@ def handle_events():
                     elif Stair_Y[0] + 242 < 0:
                         SelIdx[0] = random.randint(0, 9)
                         Stair_Y[0] = Stair_Y[2] + (10 * 28)
-        elif IsOver and event.type == SDL_KEYDOWN and event.key == SDLK_LEFT:
-            print('run')
+                elif DownCnt > 0 and event.key == SDLK_z:
+                    HeroFlag = -1  #########################################수정
+                    store_state.Item_Hero = load_image('usedItem_Hero.png')
+                    pass
+                elif DownCnt > 0 and event.key == SDLK_x:
+                    LifeFlag = -1
+                    store_state.Item_Life = load_image('usedItem_Life.png')
+                    pass
+                elif DownCnt > 0 and event.key == SDLK_c:
+                    StopFlag = -1
+                    store_state.Item_Stop = load_image('usedItem_Stop.png')
+                    pass
 
-
+        # elif IsOver and event.type == SDL_KEYDOWN and event.key == SDLK_LEFT:
+        #     print('run')
 
         # over_check()
 
 
 def update():
+    global DownCnt
     boy.update()
     time.update()
     over_check()
@@ -295,6 +317,7 @@ def update():
     if IsOver and boy.frame == -1:
         start_state.TotalMoney += DownCnt
         game_framework.change_state(gameover_state)
+
     pass
 
 
@@ -312,15 +335,21 @@ def over_check():   # 게임 종료 체크
                             IsOver = True
                             DownCnt -= 1
                             boy.state = boy.DEAD
+                            title_state.bgm.set_volume(0)
+                            title_state.bgm.stop()
 
         if boy.x < (Stair_X[n] - 25) or boy.x > (Stair_X[n] + 318):     # 아예 계단 밖으로 나간 경우
             IsOver = True
             DownCnt -= 1
             boy.state = boy.DEAD
+            title_state.bgm.set_volume(0)
+            title_state.bgm.stop()
 
-        if time.width <= 0:
+        if time.width <= 0:     # 시간이 모두 경과
             IsOver = True
             boy.state = boy.DEAD
+            title_state.bgm.set_volume(0)
+            title_state.bgm.stop()
 
 
 def score_check(num):      # 게임 스코어 및 게임 머니 체크
@@ -335,6 +364,12 @@ def score_check(num):      # 게임 스코어 및 게임 머니 체크
     pass
 
 
+def Item_draw():
+    store_state.Item_Hero.draw(40, 40)
+    store_state.Item_Life.draw(140, 40)
+    store_state.Item_Stop.draw(240, 40)
+
+
 def draw():
     clear_canvas()
     background.draw(400, bg_Y)
@@ -345,6 +380,7 @@ def draw():
     boy.draw()
     time.draw()
     time_frame.draw(400, 513)
+    Item_draw()
 
      #=================== 스코어 출력
     if score_check(DownCnt) == 0:

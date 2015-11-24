@@ -11,14 +11,19 @@ left_sel = None
 right_sel = None
 mode = None
 sel = None
+bgm = None
 
 
 def enter():
-    global title_bg, left_sel, right_sel, mode, sel
+    global title_bg, left_sel, right_sel, mode, sel, bgm
     title_bg = load_image('title_bg.png')
     left_sel = load_image('Left_sel.png')
     right_sel = load_image('Right_sel.png')
     mode = load_image('normal.png')
+
+    bgm = load_music('Happy.ogg')
+    bgm.set_volume(60)
+    bgm.repeat_play()
     sel = 0
     pass
 

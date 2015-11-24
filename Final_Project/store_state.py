@@ -21,11 +21,11 @@ sel = None
 coin_image = None
 coin_sound = None
 sel_x, sel_y = None, None
-
+bgm = None
 
 def enter():
     global store, Item_Hero, Item_Life, Item_Stop, sel, sel_x, sel_y, GameStart, Num_image, Num, coin_image
-    global coin_sound
+    global coin_sound, bgm
 
     # title_bg = load_image('title_bg.png')
     store = load_image('store.png')
@@ -40,6 +40,11 @@ def enter():
     coin_sound = load_wav('coin_sound.wav')
     coin_sound.set_volume(35)
 
+    if (title_state.bgm.get_volume()) == 0:
+        bgm = load_music('Happy.ogg')
+        bgm.set_volume(60)
+        bgm.repeat_play()
+
     Num = []
     sel_x, sel_y = 330, 195
 
@@ -50,13 +55,10 @@ def enter():
 
 
 def exit():
-    global Item_Hero, Item_Life, Item_Stop, store, sel, GameStart
+    global store, sel, GameStart
 
     # del(title_bg)
     del(store)
-    del(Item_Hero)
-    del(Item_Life)
-    del(Item_Stop)
     del(GameStart)
     # close_canvas()
     pass
@@ -92,7 +94,6 @@ def handle_events():
                             pass
                         elif sel_x == 440:
                             main_state.LifeFlag = buy(main_state.LifeFlag)
-
                             if main_state.LifeFlag == 1:
                                 Item_Life = load_image('Item_Life.png')
                             else:
@@ -153,11 +154,13 @@ def buy(flag):
     if start_state.TotalMoney - 100 >= 0 and flag == -1:
         flag *= -1
         start_state.TotalMoney -= 100
+        coin_sound.play()
     elif flag == 1:
         flag *= -1
         start_state.TotalMoney += 100
+        coin_sound.play()
 
-    coin_sound.play()
+
     return flag
 
 
