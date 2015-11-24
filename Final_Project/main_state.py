@@ -11,10 +11,6 @@ import stairs
 
 import random
 
-
-
-
-
 name = "MainState"
 
 IsOver = None
@@ -349,6 +345,15 @@ def draw():
     boy.draw()
     time.draw()
     time_frame.draw(400, 513)
+
+     #=================== 스코어 출력
+    if score_check(DownCnt) == 0:
+        store_state.Num_image.clip_draw(0, 0, 21, 25, 270, 470)
+        pass
+    else:
+        for i in range(score_check(DownCnt)):
+            store_state.Num_image.clip_draw(store_state.Num[i] * 21, 0, 21, 25, (270 + int(score_check(DownCnt) / 2) * 21) - (i * 21), 470)
+
     update_canvas()
     delay(0.08)
     pass
