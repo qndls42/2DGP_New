@@ -9,21 +9,26 @@ from pico2d import *
 name = "GameOverState"
 
 score_board = None
-
+game_over_sound = None
 
 def enter():
-    global score_board
+    global score_board, game_over_sound
 
     store_state.sel_x = 380
     store_state.sel_y = 160
     score_board = load_image('score_board.png')
+
+    game_over_sound = load_wav('game_over.wav')
+    game_over_sound.set_volume(60)
+    game_over_sound.play(1)
     pass
 
 
 def exit():
-    global score_board
+    global score_board, game_over_sound
 
     del score_board
+    del game_over_sound
     pass
 
 
