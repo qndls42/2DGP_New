@@ -38,13 +38,13 @@ def enter():
     coin_image = load_image('coin.png')
 
     coin_sound = load_wav('coin_sound.wav')
-    # coin_sound.set_volume(35) 원본
-    coin_sound.set_volume(1)
+    coin_sound.set_volume(35) # 원 볼륨
+    # coin_sound.set_volume(1)
 
     if (title_state.bgm.get_volume()) == 0:
         bgm = load_music('Happy.ogg')
-        # bgm.set_volume(60) 원본
-        bgm.set_volume(1)
+        bgm.set_volume(60) # 원 볼륨
+        # bgm.set_volume(1)
         bgm.repeat_play()
 
     Num = []

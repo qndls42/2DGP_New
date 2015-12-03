@@ -22,8 +22,8 @@ def enter():
     mode = load_image('normal.png')
 
     bgm = load_music('Happy.ogg')
-    # bgm.set_volume(60)   원본
-    bgm.set_volume(1)
+    bgm.set_volume(60)   # 원본
+    # bgm.set_volume(1)
     bgm.repeat_play()
     sel = 0
     pass

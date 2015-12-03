@@ -43,6 +43,8 @@ LifeFlag = None
 StopFlag = None
 current_time = 0.0
 
+dead_sound = None
+
 time_frame = None
 
 DownCnt = None
@@ -68,6 +70,7 @@ class Time:
 
 class Boy:
     image = None
+    dead_sound = None
 
     RIGHT_STAND, LEFT_STAND, RIGHT_RUN, LEFT_RUN, DEAD = 4, 3, 2, 1, 0
 
@@ -80,6 +83,10 @@ class Boy:
         self.state = self.LEFT_STAND
         self.image = load_image('player.png')
         self.dir = 1  # 왼쪽을 향하고 있는 상태 = 1
+        if Boy.dead_sound == None:
+            Boy.dead_sound = load_wav('dead_sound.wav')
+            Boy.dead_sound.set_volume(32)
+            pass
 
     def handle_left_run(self):
         self.run_frames += 1
@@ -135,6 +142,8 @@ class Boy:
             self.image.clip_draw(self.frame * 96, self.state * 145, 86, 140, self.x, self.y)
             pass
 
+    def dead(self):
+        self.dead_sound.play()
 
 def enter():
     global boy, time
@@ -144,6 +153,7 @@ def enter():
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global DownCnt, IsOver
     global time_frame
+    global dead_sound
     # global Num
 
     IsOver = False
@@ -342,19 +352,23 @@ def over_check():   # 게임 종료 체크
                             IsOver = True
                             DownCnt -= 1
                             boy.state = boy.DEAD
+                            boy.dead()
                             title_state.bgm.set_volume(0)
                             title_state.bgm.stop()
+
 
         if boy.x < (Stair_X[n] - 25) or boy.x > (Stair_X[n] + 318):     # 아예 계단 밖으로 나간 경우
             IsOver = True
             DownCnt -= 1
             boy.state = boy.DEAD
+            boy.dead()
             title_state.bgm.set_volume(0)
             title_state.bgm.stop()
 
         if time.width <= 0:     # 시간이 모두 경과
             IsOver = True
             boy.state = boy.DEAD
+            boy.dead()
             title_state.bgm.set_volume(0)
             title_state.bgm.stop()
 
