@@ -41,6 +41,7 @@ Stair_Y = None
 HeroFlag = None
 LifeFlag = None
 StopFlag = None
+current_time = 0.0
 
 time_frame = None
 
@@ -53,7 +54,7 @@ class Time:
     def __init__(self):
         self.x, self.y = 400, 500
         self.width = 158
-        self.sub = 1
+        self.sub = 2
         self.gauge_image = load_image('time_gauge.png')
 
     def update(self):
@@ -197,7 +198,7 @@ def handle_events():
     global stairImage, Selidx_1, Selidx_2, Selidx_3, SelIdx
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global IsOver
-    global HeroFlag, LifeFlag, StopFlag
+    global HeroFlag, LifeFlag, StopFlag, current_time
 
     events = get_events()
     for event in events:
@@ -236,7 +237,7 @@ def handle_events():
                         bg_Y -= 20
                         if time.width < 316 - 25 and StopFlag != 0:
                             time.width += 25
-                        elif 316 - 25 <= time.width <= 316:
+                        elif 316 - 25 <= time.width <= 316 and StopFlag != 0:
                             time.width = 316
 
                     if Stair_Y[1] + 242 < 0:
@@ -276,7 +277,7 @@ def handle_events():
                         bg_Y -= 20
                         if time.width < 316 - 25 and StopFlag != 0:
                             time.width += 25
-                        elif 316 - 25 <= time.width <= 316:
+                        elif 316 - 25 <= time.width <= 316 and StopFlag != 0:
                             time.width = 316
 
                     if Stair_Y[1] + 242 < 0:
@@ -288,7 +289,7 @@ def handle_events():
                     elif Stair_Y[0] + 242 < 0:
                         SelIdx[0] = random.randint(0, 9)
                         Stair_Y[0] = Stair_Y[2] + (10 * 28)
-                elif DownCnt > 0 and event.key == SDLK_z:
+                elif DownCnt > 0 and event.key == SDLK_z and HeroFlag != -1:
                     HeroFlag = -1  #########################################수정
                     store_state.Item_Hero = load_image('usedItem_Hero.png')
                     pass
@@ -296,10 +297,12 @@ def handle_events():
                 #     LifeFlag = -1
                 #     store_state.Item_Life = load_image('usedItem_Life.png')
                 #     pass
-                elif DownCnt > 0 and event.key == SDLK_c:
+                elif DownCnt > 0 and event.key == SDLK_c and StopFlag != -1:
                     StopFlag = 0
                     store_state.Item_Stop = load_image('usedItem_Stop.png')
                     time.gauge_image = load_image('time_gauge_stop.png')
+                    current_time = get_time()
+                    print("%f \n" % current_time)
                     pass
 
         # elif IsOver and event.type == SDL_KEYDOWN and event.key == SDLK_LEFT:
@@ -309,10 +312,13 @@ def handle_events():
 
 
 def update():
-    global DownCnt
+    global DownCnt, current_time, StopFlag
     boy.update()
     if StopFlag != 0:
         time.update()
+    elif get_time() - current_time >= 5.0:
+        StopFlag = -1
+        time.gauge_image = load_image('time_gauge.png')
     over_check()
 
     if IsOver and boy.frame == -1:
