@@ -4,7 +4,6 @@ import game_framework
 import title_state
 import store_state
 import main_state
-import start_state
 from pico2d import *
 
 name = "GameOverState"
@@ -32,6 +31,8 @@ def handle_events():
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
+            del title_state.bgm
+            del store_state.bgm
             game_framework.quit()
         else:
             if event.type == SDL_KEYDOWN:

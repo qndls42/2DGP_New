@@ -202,6 +202,7 @@ def handle_events():
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
+            del title_state.bgm
             game_framework.quit()
         # elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
         #     if IsOver:
@@ -214,7 +215,6 @@ def handle_events():
                     DownCnt += 1
 
                     if DownCnt % 20 == 0:
-                        print('run')
                         time.sub += 1
 
                     if DownCnt == 1:
@@ -234,7 +234,7 @@ def handle_events():
                         bg2_Y -= 20
                         bg1_Y -= 20
                         bg_Y -= 20
-                        if time.width < 316 - 25:
+                        if time.width < 316 - 25 and StopFlag != 0:
                             time.width += 25
                         elif 316 - 25 <= time.width <= 316:
                             time.width = 316
@@ -255,7 +255,6 @@ def handle_events():
                     boy.state = boy.RIGHT_RUN
 
                     if DownCnt % 20 == 0:
-                        print('run')
                         time.sub += 1
 
                     if DownCnt == 1:
@@ -275,7 +274,7 @@ def handle_events():
                         bg2_Y -= 20
                         bg1_Y -= 20
                         bg_Y -= 20
-                        if time.width < 316 - 25:
+                        if time.width < 316 - 25 and StopFlag != 0:
                             time.width += 25
                         elif 316 - 25 <= time.width <= 316:
                             time.width = 316
@@ -293,13 +292,14 @@ def handle_events():
                     HeroFlag = -1  #########################################수정
                     store_state.Item_Hero = load_image('usedItem_Hero.png')
                     pass
-                elif DownCnt > 0 and event.key == SDLK_x:
-                    LifeFlag = -1
-                    store_state.Item_Life = load_image('usedItem_Life.png')
-                    pass
+                # elif DownCnt > 0 and event.key == SDLK_x:
+                #     LifeFlag = -1
+                #     store_state.Item_Life = load_image('usedItem_Life.png')
+                #     pass
                 elif DownCnt > 0 and event.key == SDLK_c:
-                    StopFlag = -1
+                    StopFlag = 0
                     store_state.Item_Stop = load_image('usedItem_Stop.png')
+                    time.gauge_image = load_image('time_gauge_stop.png')
                     pass
 
         # elif IsOver and event.type == SDL_KEYDOWN and event.key == SDLK_LEFT:
@@ -311,7 +311,8 @@ def handle_events():
 def update():
     global DownCnt
     boy.update()
-    time.update()
+    if StopFlag != 0:
+        time.update()
     over_check()
 
     if IsOver and boy.frame == -1:

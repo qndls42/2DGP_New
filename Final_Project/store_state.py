@@ -38,11 +38,13 @@ def enter():
     coin_image = load_image('coin.png')
 
     coin_sound = load_wav('coin_sound.wav')
-    coin_sound.set_volume(35)
+    # coin_sound.set_volume(35) 원본
+    coin_sound.set_volume(1)
 
     if (title_state.bgm.get_volume()) == 0:
         bgm = load_music('Happy.ogg')
-        bgm.set_volume(60)
+        # bgm.set_volume(60) 원본
+        bgm.set_volume(1)
         bgm.repeat_play()
 
     Num = []
@@ -65,11 +67,13 @@ def exit():
 
 
 def handle_events():
-    global sel, sel_x, sel_y, Item_Hero, Item_Life, Item_Stop
+    global sel, sel_x, sel_y, Item_Hero, Item_Life, Item_Stop, bgm
 
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
+            del title_state.bgm
+            del bgm
             game_framework.quit()
         else:
             if event.type == SDL_KEYDOWN:
