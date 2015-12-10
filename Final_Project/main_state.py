@@ -8,7 +8,6 @@ import store_state
 import start_state
 import gameover_state
 import stairs
-
 import random
 
 name = "MainState"
@@ -64,11 +63,9 @@ class Time:
         if Time.ticking == None:
             Time.ticking = load_wav('time_ticking.wav')
             Time.ticking.set_volume(32)
-
         if Time.ticking_break == None:
             Time.ticking_break = load_wav('ticking_break.wav')
             Time.ticking_break.set_volume(32)
-
 
     def update(self):
         # print(self.width)
@@ -164,6 +161,7 @@ class Boy:
     def walk(self):
         self.walk_sound.play()
 
+
 def enter():
     global boy, time
     global background, background1_1, background1_2
@@ -200,7 +198,6 @@ def enter():
     background1_1 = load_image('background1.png')
     background1_2 = load_image('background1.png')
 
-
     time_frame = load_image('time_frame.png')
 
     pass
@@ -235,41 +232,51 @@ def handle_events():
         if event.type == SDL_QUIT:
             del title_state.bgm
             game_framework.quit()
-        # elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
-        #     if IsOver:
-        #         game_framework.change_state(title_state)
         elif not IsOver:
             if event.type == SDL_KEYDOWN:
                 if event.key == SDLK_LEFT:
-                    boy.walk()
                     boy.run_frames = 0
                     boy.state = boy.LEFT_RUN
                     DownCnt += 1
 
+                    over_check(1)
+
                     if DownCnt % 20 == 0:
                         time.sub += 1
 
-                    if DownCnt == 1:
+                    if IsOver:
+                        # 캐릭터만 움직임
                         boy.x -= 57
                         boy.y += 23
+                        pass
                     else:
-                        for i in range(0, 3):
-                            Stair_X[i] += 50
-                            Stair_Y[i] -= 28
+                        boy.walk()
+                        if DownCnt == 1:
+                            boy.x -= 57
+                            boy.y += 23
+                        else:
+                            for i in range(0, 3):
+                                Stair_X[i] += 50
+                                Stair_Y[i] -= 28
+                            if DownCnt > 1:
+                                if (bg1_Y + 758) < -1:
+                                    bg1_Y = bg2_Y + 1516
+                                elif (bg2_Y + 758) < -1:
+                                    bg2_Y = bg1_Y + 1516
+                                if DownCnt < 47:
+                                    bg2_Y -= 20
+                                    bg1_Y -= 20
+                                    bg_Y -= 20
+                                else:
+                                    bg2_Y -= 10
+                                    bg1_Y -= 10
+                                    bg_Y -= 10
                         pass
 
-                    if DownCnt > 1:
-                        if (bg1_Y + 758) < -1:
-                            bg1_Y = bg2_Y + 1516
-                        elif (bg2_Y + 758) < -1:
-                            bg2_Y = bg1_Y + 1516
-                        bg2_Y -= 20
-                        bg1_Y -= 20
-                        bg_Y -= 20
-                        if time.width < 316 - 25 and StopFlag != 0:
-                            time.width += 25
-                        elif 316 - 25 <= time.width <= 316 and StopFlag != 0:
-                            time.width = 316
+                    if time.width < 316 - 25 and StopFlag != 0:
+                        time.width += 25
+                    elif 316 - 25 <= time.width <= 316 and StopFlag != 0:
+                        time.width = 316
 
                     if Stair_Y[1] + 242 < 0:
                         SelIdx[1] = random.randint(0, 9)
@@ -282,31 +289,43 @@ def handle_events():
                         Stair_Y[0] = Stair_Y[2] + (10 * 28)
                     pass
                 elif event.key == SDLK_RIGHT:
-                    boy.walk()
                     DownCnt += 1
                     boy.run_frames = 0
                     boy.state = boy.RIGHT_RUN
 
+                    over_check(2)
+
                     if DownCnt % 20 == 0:
                         time.sub += 1
 
-                    if DownCnt == 1:
+                    if IsOver:
                         boy.x += 57
                         boy.y += 23
+                        pass
                     else:
-                        for i in range(0, 3):
-                            Stair_X[i] -= 50
-                            Stair_Y[i] -= 28
+                        boy.walk()
+                        if DownCnt == 1:
+                            boy.x += 57
+                            boy.y += 23
+                        else:
+                            for i in range(0, 3):
+                                Stair_X[i] -= 50
+                                Stair_Y[i] -= 28
+                            if DownCnt > 1:
+                                if (bg1_Y + 758) < -1:
+                                    bg1_Y = bg2_Y + 1516
+                                elif (bg2_Y + 758) < -1:
+                                    bg2_Y = bg1_Y + 1516
+                                if DownCnt < 47:
+                                    bg2_Y -= 20
+                                    bg1_Y -= 20
+                                    bg_Y -= 20
+                                else:
+                                    bg2_Y -= 10
+                                    bg1_Y -= 10
+                                    bg_Y -= 10
                         pass
 
-                    if DownCnt > 1:
-                        if (bg1_Y + 758) < -1:
-                            bg1_Y = bg2_Y + 1516
-                        elif (bg2_Y + 758) < -1:
-                            bg2_Y = bg1_Y + 1516
-                        bg2_Y -= 20
-                        bg1_Y -= 20
-                        bg_Y -= 20
                         if time.width < 316 - 25 and StopFlag != 0:
                             time.width += 25
                         elif 316 - 25 <= time.width <= 316 and StopFlag != 0:
@@ -321,6 +340,7 @@ def handle_events():
                     elif Stair_Y[0] + 242 < 0:
                         SelIdx[0] = random.randint(0, 9)
                         Stair_Y[0] = Stair_Y[2] + (10 * 28)
+
                 elif DownCnt > 0 and event.key == SDLK_z and HeroFlag != -1:
                     HeroFlag = -1  #########################################수정
                     store_state.Item_Hero = load_image('usedItem_Hero.png')
@@ -338,11 +358,6 @@ def handle_events():
                     print("%f \n" % current_time)
                     pass
 
-        # elif IsOver and event.type == SDL_KEYDOWN and event.key == SDLK_LEFT:
-        #     print('run')
-
-        # over_check()
-
 
 def update():
     global DownCnt, current_time, StopFlag
@@ -355,7 +370,8 @@ def update():
         StopFlag = -1
         time.gauge_image = load_image('time_gauge.png')
         time.ticking_break.play()
-    over_check()
+
+    time_over()
 
     if IsOver and boy.frame == -1:
         start_state.TotalMoney += DownCnt
@@ -364,38 +380,60 @@ def update():
     pass
 
 
-def over_check():   # 게임 종료 체크
+def over_check(event):   # 게임 종료 체크
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global Selidx_1, Selidx_2, Selidx_3, SelIdx
     global IsOver, DownCnt
 
-    if not IsOver and DownCnt > 0:
+    if DownCnt == 1 and event == 2:
+        IsOver = True
+        DownCnt -= 1
+        boy.state = boy.DEAD
+        boy.dead()
+        title_state.bgm.set_volume(0)
+        title_state.bgm.stop()
+        pass
+    elif not IsOver and DownCnt > 1:
         for n in range(0, 3):
             for j in range(9, -1, -1):
                 for i in range(0, 7):
                     if (Stair_X[n] + (i * 49) - 25) < boy.x < (Stair_X[n] + (i * 49) + 25) and Stair_Y[n] + ((9 - j) * 28) - 14 < boy.y - 70 <= Stair_Y[n] + ((9 - j) * 28) + 14:
-                        if stairs.SelStair[title_state.sel][SelIdx[n]][j][i] == 0:      # 제대로 된 계단에 안올라간경우
-                            IsOver = True
-                            DownCnt -= 1
-                            boy.state = boy.DEAD
-                            boy.dead()
-                            title_state.bgm.set_volume(0)
-                            title_state.bgm.stop()
+                        if stairs.SelStair[title_state.sel][SelIdx[n]][j - 1][i - 1] == 1:  # 서있던 계단의 왼쪽 위 계단이 진짜일 경우
+                            if event == 1:  # 왼쪽 방향키 눌렀을 때
+                                pass
+                            elif event == 2:   # 오른쪽 방향키 눌렀을 때
+                                # 게임 종료
+                                IsOver = True
+                                DownCnt -= 1
+                                boy.state = boy.DEAD
+                                boy.dead()
+                                title_state.bgm.set_volume(0)
+                                title_state.bgm.stop()
+                                pass
+                        elif stairs.SelStair[title_state.sel][SelIdx[n]][j - 1][i + 1] == 1:  # 서있던 계단의 오른쪽 위 계단이 진짜일 경우
+                            if event == 1:
+                                # 게임 종료
+                                IsOver = True
+                                DownCnt -= 1
+                                boy.state = boy.DEAD
+                                boy.dead()
+                                title_state.bgm.set_volume(0)
+                                title_state.bgm.stop()
+                                pass
+                            elif event == 2:
+                                pass
+                        pass
 
-        if boy.x < (Stair_X[n] - 25) or boy.x > (Stair_X[n] + 318):     # 아예 계단 밖으로 나간 경우
-            IsOver = True
-            DownCnt -= 1
-            boy.state = boy.DEAD
-            boy.dead()
-            title_state.bgm.set_volume(0)
-            title_state.bgm.stop()
 
-        if time.width <= 0:     # 시간이 모두 경과
-            IsOver = True
-            boy.state = boy.DEAD
-            boy.dead()
-            title_state.bgm.set_volume(0)
-            title_state.bgm.stop()
+def time_over():
+    global IsOver
+
+    if time.width <= 0:     # 시간이 모두 경과
+        IsOver = True
+        boy.state = boy.DEAD
+        boy.dead()
+        title_state.bgm.set_volume(0)
+        title_state.bgm.stop()
 
 
 def score_check(num):      # 게임 스코어 및 게임 머니 체크
