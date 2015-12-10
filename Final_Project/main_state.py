@@ -46,18 +46,29 @@ current_time = 0.0
 dead_sound = None
 
 time_frame = None
+time = None
 
 DownCnt = None
 
 
 class Time:
     gauge_image = None
+    ticking = None
+    ticking_break = None
 
     def __init__(self):
         self.x, self.y = 400, 500
         self.width = 158
         self.sub = 2
         self.gauge_image = load_image('time_gauge.png')
+        if Time.ticking == None:
+            Time.ticking = load_wav('time_ticking.wav')
+            Time.ticking.set_volume(32)
+
+        if Time.ticking_break == None:
+            Time.ticking_break = load_wav('ticking_break.wav')
+            Time.ticking_break.set_volume(32)
+
 
     def update(self):
         # print(self.width)
@@ -71,6 +82,7 @@ class Time:
 class Boy:
     image = None
     dead_sound = None
+    walk_sound = None
 
     RIGHT_STAND, LEFT_STAND, RIGHT_RUN, LEFT_RUN, DEAD = 4, 3, 2, 1, 0
 
@@ -86,6 +98,10 @@ class Boy:
         if Boy.dead_sound == None:
             Boy.dead_sound = load_wav('dead_sound.wav')
             Boy.dead_sound.set_volume(32)
+            pass
+        if Boy.walk_sound == None:
+            Boy.walk_sound = load_wav('walk_sound.wav')
+            Boy.walk_sound.set_volume(32)
             pass
 
     def handle_left_run(self):
@@ -145,6 +161,9 @@ class Boy:
     def dead(self):
         self.dead_sound.play()
 
+    def walk(self):
+        self.walk_sound.play()
+
 def enter():
     global boy, time
     global background, background1_1, background1_2
@@ -172,6 +191,7 @@ def enter():
     SelIdx = [Selidx_1, Selidx_2, Selidx_3]
 
     boy = Boy()
+    time = Time()
 
     bg_Y = 650
     bg1_Y = bg_Y + 1458
@@ -180,7 +200,7 @@ def enter():
     background1_1 = load_image('background1.png')
     background1_2 = load_image('background1.png')
 
-    time = Time()
+
     time_frame = load_image('time_frame.png')
 
     pass
@@ -221,6 +241,7 @@ def handle_events():
         elif not IsOver:
             if event.type == SDL_KEYDOWN:
                 if event.key == SDLK_LEFT:
+                    boy.walk()
                     boy.run_frames = 0
                     boy.state = boy.LEFT_RUN
                     DownCnt += 1
@@ -261,6 +282,7 @@ def handle_events():
                         Stair_Y[0] = Stair_Y[2] + (10 * 28)
                     pass
                 elif event.key == SDLK_RIGHT:
+                    boy.walk()
                     DownCnt += 1
                     boy.run_frames = 0
                     boy.state = boy.RIGHT_RUN
@@ -312,6 +334,7 @@ def handle_events():
                     store_state.Item_Stop = load_image('usedItem_Stop.png')
                     time.gauge_image = load_image('time_gauge_stop.png')
                     current_time = get_time()
+                    time.ticking.play(3)
                     print("%f \n" % current_time)
                     pass
 
@@ -324,11 +347,14 @@ def handle_events():
 def update():
     global DownCnt, current_time, StopFlag
     boy.update()
+
+    # Stop 아이템 사용시 코드
     if StopFlag != 0:
         time.update()
     elif get_time() - current_time >= 5.0:
         StopFlag = -1
         time.gauge_image = load_image('time_gauge.png')
+        time.ticking_break.play()
     over_check()
 
     if IsOver and boy.frame == -1:
@@ -355,7 +381,6 @@ def over_check():   # 게임 종료 체크
                             boy.dead()
                             title_state.bgm.set_volume(0)
                             title_state.bgm.stop()
-
 
         if boy.x < (Stair_X[n] - 25) or boy.x > (Stair_X[n] + 318):     # 아예 계단 밖으로 나간 경우
             IsOver = True
