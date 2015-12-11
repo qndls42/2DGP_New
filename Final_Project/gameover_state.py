@@ -51,9 +51,11 @@ def handle_events():
                     pass
                 elif event.key == SDLK_SPACE:
                     if store_state.sel_x == 380:
+                        del title_state.bgm
                         game_framework.change_state(title_state)
                         pass
                     elif store_state.sel_x == 530:
+                        del store_state.bgm
                         game_framework.change_state(store_state)
                         pass
     pass

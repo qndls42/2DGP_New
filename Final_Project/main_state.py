@@ -15,19 +15,21 @@ name = "MainState"
 IsOver = None
 
 boy = None
+current_x = None
+current_y = None
+
 background = None
 background1_1 = None
 background1_2 = None
-
 bg_Y = None
 bg1_Y = None
 bg2_Y = None
+
 stairImage = None
 Selidx_1 = None     # 계단
 Selidx_2 = None     # 계단
 Selidx_3 = None     # 계단
 SelIdx = None
-
 stair1_X = None
 stair1_Y = None
 stair2_X = None
@@ -40,12 +42,12 @@ Stair_Y = None
 HeroFlag = None
 LifeFlag = None
 StopFlag = None
-current_time = 0.0
 
-dead_sound = None
+# dead_sound = None
 
 time_frame = None
 time = None
+current_time = 0.0
 
 DownCnt = None
 
@@ -60,15 +62,14 @@ class Time:
         self.width = 158
         self.sub = 2
         self.gauge_image = load_image('time_gauge.png')
-        if Time.ticking == None:
+        if Time.ticking is None:
             Time.ticking = load_wav('time_ticking.wav')
             Time.ticking.set_volume(32)
-        if Time.ticking_break == None:
+        if Time.ticking_break is None:
             Time.ticking_break = load_wav('ticking_break.wav')
             Time.ticking_break.set_volume(32)
 
     def update(self):
-        # print(self.width)
         if not IsOver and DownCnt > 0:
             self.width -= self.sub
 
@@ -92,11 +93,11 @@ class Boy:
         self.state = self.LEFT_STAND
         self.image = load_image('player.png')
         self.dir = 1  # 왼쪽을 향하고 있는 상태 = 1
-        if Boy.dead_sound == None:
+        if Boy.dead_sound is None:
             Boy.dead_sound = load_wav('dead_sound.wav')
             Boy.dead_sound.set_volume(32)
             pass
-        if Boy.walk_sound == None:
+        if Boy.walk_sound is None:
             Boy.walk_sound = load_wav('walk_sound.wav')
             Boy.walk_sound.set_volume(32)
             pass
@@ -120,8 +121,20 @@ class Boy:
         self.stand_frames += 1
 
     def handle_dead(self):
-        if self.dead_frames == 9:
-            self.frame = -1
+        global LifeFlag, IsOver
+
+        if self.dead_frames == 9 and LifeFlag == -1:
+            self.dead_frames = -1
+        elif self.dead_frames == 9 and LifeFlag == 1:
+            self.state = self.LEFT_STAND
+            self.stand_frames = 0
+            boy.x = current_x
+            boy.y = current_y
+            IsOver = False
+            LifeFlag = -1
+            store_state.Item_Life = load_image('usedItem_Life.png')
+            self.dead_frames = 0
+            pass
         else:
             self.dead_frames += 1
         pass
@@ -170,7 +183,6 @@ def enter():
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global DownCnt, IsOver
     global time_frame
-    global dead_sound
     # global Num
 
     IsOver = False
@@ -206,8 +218,8 @@ def enter():
 def exit():
     global boy, time, background
     del background
-    del(boy)
-    del(time)
+    del boy
+    del time
     pass
 
 
@@ -226,6 +238,7 @@ def handle_events():
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global IsOver
     global HeroFlag, LifeFlag, StopFlag, current_time
+    global current_x, current_y
 
     events = get_events()
     for event in events:
@@ -246,6 +259,8 @@ def handle_events():
 
                     if IsOver:
                         # 캐릭터만 움직임
+                        current_x = boy.x
+                        current_y = boy.y
                         boy.x -= 57
                         boy.y += 23
                         pass
@@ -299,6 +314,8 @@ def handle_events():
                         time.sub += 1
 
                     if IsOver:
+                        current_x = boy.x
+                        current_y = boy.y
                         boy.x += 57
                         boy.y += 23
                         pass
@@ -355,7 +372,6 @@ def handle_events():
                     time.gauge_image = load_image('time_gauge_stop.png')
                     current_time = get_time()
                     time.ticking.play(3)
-                    print("%f \n" % current_time)
                     pass
 
 
@@ -373,7 +389,7 @@ def update():
 
     time_over()
 
-    if IsOver and boy.frame == -1:
+    if IsOver and boy.dead_frames == -1:
         start_state.TotalMoney += DownCnt
         game_framework.change_state(gameover_state)
 
@@ -381,9 +397,9 @@ def update():
 
 
 def over_check(event):   # 게임 종료 체크
-    global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global Selidx_1, Selidx_2, Selidx_3, SelIdx
     global IsOver, DownCnt
+    global LifeFlag
 
     if DownCnt == 1 and event == 2:
         IsOver = True
@@ -392,7 +408,7 @@ def over_check(event):   # 게임 종료 체크
         boy.dead()
         title_state.bgm.set_volume(0)
         title_state.bgm.stop()
-        pass
+
     elif not IsOver and DownCnt > 1:
         for n in range(0, 3):
             for j in range(9, -1, -1):
@@ -407,8 +423,9 @@ def over_check(event):   # 게임 종료 체크
                                 DownCnt -= 1
                                 boy.state = boy.DEAD
                                 boy.dead()
-                                title_state.bgm.set_volume(0)
-                                title_state.bgm.stop()
+                                if LifeFlag == -1:
+                                    title_state.bgm.set_volume(0)
+                                    title_state.bgm.stop()
                                 pass
                         elif stairs.SelStair[title_state.sel][SelIdx[n]][j - 1][i + 1] == 1:  # 서있던 계단의 오른쪽 위 계단이 진짜일 경우
                             if event == 1:
@@ -417,9 +434,9 @@ def over_check(event):   # 게임 종료 체크
                                 DownCnt -= 1
                                 boy.state = boy.DEAD
                                 boy.dead()
-                                title_state.bgm.set_volume(0)
-                                title_state.bgm.stop()
-                                pass
+                                if LifeFlag == -1:
+                                    title_state.bgm.set_volume(0)
+                                    title_state.bgm.stop()
                             elif event == 2:
                                 pass
                         pass
@@ -428,9 +445,10 @@ def over_check(event):   # 게임 종료 체크
 def time_over():
     global IsOver
 
-    if time.width <= 0:     # 시간이 모두 경과
+    if time.width <= 0 and not IsOver:     # 시간이 모두 경과
         IsOver = True
         boy.state = boy.DEAD
+        boy.dead_sound.set_volume(32)
         boy.dead()
         title_state.bgm.set_volume(0)
         title_state.bgm.stop()

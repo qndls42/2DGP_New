@@ -29,9 +29,10 @@ def enter():
 
 
 def exit():
-    global left_sel, right_sel
-    del(left_sel)
-    del(right_sel)
+    global left_sel, right_sel, bgm
+    # del(left_sel)
+    # del(right_sel)
+    # del bgm
     # close_canvas()
     pass
 
@@ -42,10 +43,11 @@ def handle_events():
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
-            del bgm
+
             game_framework.quit()
         else:
             if(event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):    # 조건이 둘 다 맞으면 실행하도록!
+                del store_state.bgm
                 del bgm
                 game_framework.quit()
             elif event.type == SDL_KEYDOWN:
@@ -60,7 +62,7 @@ def handle_events():
                     sel = 1
                     pass
                 elif event.key == SDLK_SPACE:
-                    game_framework.change_state(store_state)
+                    game_framework.push_state(store_state)
             elif event.type == SDL_KEYUP:
                 if event.key == SDLK_LEFT:
                     left_sel = load_image('Left_sel.png')

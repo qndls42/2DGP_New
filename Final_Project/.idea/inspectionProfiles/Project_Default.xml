@@ -6,6 +6,15 @@
         <list>
           <option value="E501" />
           <option value="E265" />
+          <option value="E114" />
+          <option value="E116" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyShadowingBuiltinsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredNames">
+        <list>
+          <option value="exit" />
         </list>
       </option>
     </inspection_tool>

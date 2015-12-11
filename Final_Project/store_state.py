@@ -23,6 +23,7 @@ coin_sound = None
 sel_x, sel_y = None, None
 bgm = None
 
+
 def enter():
     global store, Item_Hero, Item_Life, Item_Stop, sel, sel_x, sel_y, GameStart, Num_image, Num, coin_image
     global coin_sound, bgm
@@ -60,8 +61,8 @@ def exit():
     global store, sel, GameStart
 
     # del(title_bg)
-    del(store)
-    del(GameStart)
+    # del(store)
+    # del(GameStart)
     # close_canvas()
     pass
 
@@ -87,7 +88,7 @@ def handle_events():
                     pass
                 elif event.key == SDLK_SPACE:
                     if sel_y == 90:
-                        game_framework.change_state(main_state)
+                        game_framework.push_state(main_state)
                     elif sel_y == 195:
                         if sel_x == 330:
                             main_state.HeroFlag = buy(main_state.HeroFlag)
@@ -105,7 +106,6 @@ def handle_events():
                             pass
                         elif sel_x == 550:
                             main_state.StopFlag = buy(main_state.StopFlag)
-
                             if main_state.StopFlag == 1:
                                 Item_Stop = load_image('Item_Stop.png')
                             else:
