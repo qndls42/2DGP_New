@@ -39,11 +39,8 @@ stair3_Y = None
 Stair_X = None
 Stair_Y = None
 
-HeroFlag = None
 LifeFlag = None
 StopFlag = None
-
-# dead_sound = None
 
 time_frame = None
 time = None
@@ -62,6 +59,7 @@ class Time:
         self.width = 158
         self.sub = 2
         self.gauge_image = load_image('time_gauge.png')
+
         if Time.ticking is None:
             Time.ticking = load_wav('time_ticking.wav')
             Time.ticking.set_volume(32)
@@ -148,7 +146,6 @@ class Boy:
     }
 
     def update(self):
-        # fill here
         if self.state == self.LEFT_RUN or self.state == self.RIGHT_RUN:
             self.frame = self.run_frames % 6
         elif self.state == self.LEFT_STAND or self.state == self.RIGHT_STAND:
@@ -183,7 +180,6 @@ def enter():
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global DownCnt, IsOver
     global time_frame
-    # global Num
 
     IsOver = False
     DownCnt = 0
@@ -211,7 +207,6 @@ def enter():
     background1_2 = load_image('background1.png')
 
     time_frame = load_image('time_frame.png')
-
     pass
 
 
@@ -237,13 +232,14 @@ def handle_events():
     global stairImage, Selidx_1, Selidx_2, Selidx_3, SelIdx
     global stair1_X, stair1_Y, stair2_X, stair2_Y, stair3_X, stair3_Y, Stair_X, Stair_Y
     global IsOver
-    global HeroFlag, LifeFlag, StopFlag, current_time
+    global LifeFlag, StopFlag, current_time
     global current_x, current_y
 
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
             del title_state.bgm
+            del store_state.bgm
             game_framework.quit()
         elif not IsOver:
             if event.type == SDL_KEYDOWN:
@@ -255,7 +251,7 @@ def handle_events():
                     over_check(1)
 
                     if DownCnt % 20 == 0:
-                        time.sub += 1
+                        time.sub += 2
 
                     if IsOver:
                         # 캐릭터만 움직임
@@ -311,7 +307,7 @@ def handle_events():
                     over_check(2)
 
                     if DownCnt % 20 == 0:
-                        time.sub += 1
+                        time.sub += 2
 
                     if IsOver:
                         current_x = boy.x
@@ -357,21 +353,13 @@ def handle_events():
                     elif Stair_Y[0] + 242 < 0:
                         SelIdx[0] = random.randint(0, 9)
                         Stair_Y[0] = Stair_Y[2] + (10 * 28)
-
-                elif DownCnt > 0 and event.key == SDLK_z and HeroFlag != -1:
-                    HeroFlag = -1  #########################################수정
-                    store_state.Item_Hero = load_image('usedItem_Hero.png')
-                    pass
-                # elif DownCnt > 0 and event.key == SDLK_x:
-                #     LifeFlag = -1
-                #     store_state.Item_Life = load_image('usedItem_Life.png')
-                #     pass
                 elif DownCnt > 0 and event.key == SDLK_c and StopFlag != -1:
                     StopFlag = 0
                     store_state.Item_Stop = load_image('usedItem_Stop.png')
                     time.gauge_image = load_image('time_gauge_stop.png')
                     current_time = get_time()
                     time.ticking.play(3)
+                    Time.ticking.set_volume(32)
                     pass
 
 
@@ -392,7 +380,6 @@ def update():
     if IsOver and boy.dead_frames == -1:
         start_state.TotalMoney += DownCnt
         game_framework.change_state(gameover_state)
-
     pass
 
 
@@ -424,6 +411,7 @@ def over_check(event):   # 게임 종료 체크
                                 boy.state = boy.DEAD
                                 boy.dead()
                                 if LifeFlag == -1:
+                                    time.ticking.set_volume(0)
                                     title_state.bgm.set_volume(0)
                                     title_state.bgm.stop()
                                 pass
@@ -435,10 +423,20 @@ def over_check(event):   # 게임 종료 체크
                                 boy.state = boy.DEAD
                                 boy.dead()
                                 if LifeFlag == -1:
+                                    time.ticking.set_volume(0)
                                     title_state.bgm.set_volume(0)
                                     title_state.bgm.stop()
                             elif event == 2:
                                 pass
+                        else:
+                            IsOver = True
+                            DownCnt -= 1
+                            boy.state = boy.DEAD
+                            boy.dead()
+                            if LifeFlag == -1:
+                                time.ticking.set_volume(0)
+                                title_state.bgm.set_volume(0)
+                                title_state.bgm.stop()
                         pass
 
 
@@ -467,9 +465,8 @@ def score_check(num):      # 게임 스코어 및 게임 머니 체크
 
 
 def Item_draw():
-    store_state.Item_Hero.draw(40, 40)
-    store_state.Item_Life.draw(140, 40)
-    store_state.Item_Stop.draw(240, 40)
+    store_state.Item_Life.draw(60, 50)
+    store_state.Item_Stop.draw(180, 50)
 
 
 def draw():

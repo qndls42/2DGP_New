@@ -4,14 +4,11 @@ import game_framework
 import main_state
 import title_state
 import start_state
-import gameover_state
 from pico2d import *
 
 
 name = "StoreState"
-# title_bg = None
 store = None
-Item_Hero = None
 Item_Life = None
 Item_Stop = None
 GameStart = None
@@ -25,12 +22,10 @@ bgm = None
 
 
 def enter():
-    global store, Item_Hero, Item_Life, Item_Stop, sel, sel_x, sel_y, GameStart, Num_image, Num, coin_image
+    global store, Item_Life, Item_Stop, sel, sel_x, sel_y, GameStart, Num_image, Num, coin_image
     global coin_sound, bgm
 
-    # title_bg = load_image('title_bg.png')
     store = load_image('store.png')
-    Item_Hero = load_image('usedItem_Hero.png')
     Item_Life = load_image('usedItem_Life.png')
     Item_Stop = load_image('usedItem_Stop.png')
     GameStart = load_image('GameStart.png')
@@ -40,18 +35,15 @@ def enter():
 
     coin_sound = load_wav('coin_sound.wav')
     coin_sound.set_volume(35) # 원 볼륨
-    # coin_sound.set_volume(1)
 
     if (title_state.bgm.get_volume()) == 0:
         bgm = load_music('Happy.ogg')
         bgm.set_volume(60) # 원 볼륨
-        # bgm.set_volume(1)
         bgm.repeat_play()
 
     Num = []
-    sel_x, sel_y = 330, 195
+    sel_x, sel_y = 390, 195
 
-    main_state.HeroFlag = -1
     main_state.LifeFlag = -1
     main_state.StopFlag = -1
     pass
@@ -60,15 +52,11 @@ def enter():
 def exit():
     global store, sel, GameStart
 
-    # del(title_bg)
-    # del(store)
-    # del(GameStart)
-    # close_canvas()
     pass
 
 
 def handle_events():
-    global sel, sel_x, sel_y, Item_Hero, Item_Life, Item_Stop, bgm
+    global sel, sel_x, sel_y, Item_Life, Item_Stop, bgm
 
     events = get_events()
     for event in events:
@@ -79,32 +67,25 @@ def handle_events():
         else:
             if event.type == SDL_KEYDOWN:
                 if event.key == SDLK_LEFT:
-                    if sel_x > 330 and sel_y == 195:
+                    if sel_x > 390 and sel_y == 195:
                         sel_x -= 110
                     pass
                 elif event.key == SDLK_RIGHT:
-                    if sel_x < 550 and sel_y == 195:
+                    if sel_x < 500 and sel_y == 195:
                         sel_x += 110
                     pass
                 elif event.key == SDLK_SPACE:
                     if sel_y == 90:
                         game_framework.push_state(main_state)
                     elif sel_y == 195:
-                        if sel_x == 330:
-                            main_state.HeroFlag = buy(main_state.HeroFlag)
-                            if main_state.HeroFlag == 1:
-                                Item_Hero = load_image('Item_Hero.png')
-                            else:
-                                Item_Hero = load_image('usedItem_Hero.png')
-                            pass
-                        elif sel_x == 440:
+                        if sel_x == 390:
                             main_state.LifeFlag = buy(main_state.LifeFlag)
                             if main_state.LifeFlag == 1:
                                 Item_Life = load_image('Item_Life.png')
                             else:
                                 Item_Life = load_image('usedItem_Life.png')
                             pass
-                        elif sel_x == 550:
+                        elif sel_x == 500:
                             main_state.StopFlag = buy(main_state.StopFlag)
                             if main_state.StopFlag == 1:
                                 Item_Stop = load_image('Item_Stop.png')
@@ -117,11 +98,9 @@ def handle_events():
                         sel_y -= 105
                 elif event.key == SDLK_UP:
                     if sel_y < 195:
-                        sel_x = 330
+                        sel_x = 390
                         sel_y += 105
 
-            # elif(event.type, event.key) == (SDL_KEYDOWN, SDLK_SPACE):
-            #     game_framework.change_state(main_state)
     pass
 
 
@@ -130,14 +109,13 @@ def draw():
     title_state.title_bg.draw(400, 300)
     store.draw(400, 300)
 
-    Item_Hero.draw(291, 225)
-    Item_Life.draw(401, 225)
-    Item_Stop.draw(511, 225)
+    Item_Life.draw(351, 225)
+    Item_Stop.draw(461, 225)
 
-    for i in range(3):
-        Num_image.clip_draw(21, 0, 21, 25, 271 + (i * 110), 175)
-        Num_image.clip_draw(0, 0, 21, 25, 290 + (i * 110), 175)
-        Num_image.clip_draw(0, 0, 21, 25, 311 + (i * 110), 175)
+    for i in range(2):
+        Num_image.clip_draw(21, 0, 21, 25, 331 + (i * 110), 175)
+        Num_image.clip_draw(0, 0, 21, 25, 350 + (i * 110), 175)
+        Num_image.clip_draw(0, 0, 21, 25, 371 + (i * 110), 175)
     GameStart.draw(401, 120)
     sel.draw(sel_x, sel_y) # 화살표
 
