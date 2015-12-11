@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "run_game.py", line 15, in <module>
+  File "C:\2DGP\FinalProject\game_framework.py", line 86, in run
+    stack[-1].update()
+  File "C:\2DGP\FinalProject\start_state.py", line 32, in update
+    game_framework.push_state(title_state)
+  File "C:\2DGP\FinalProject\game_framework.py", line 58, in push_state
+    state.enter()
+  File "C:\2DGP\FinalProject\title_state.py", line 20, in enter
+    title = load_image('title.png')
+  File "C:\2DGP\FinalProject\pico2d.py", line 295, in load_image
+    raise IOError
+OSError

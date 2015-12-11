@@ -81,7 +81,7 @@ manifest_template = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
 mygame = Target(
     script="run_game.py",
-    dest_base="MyGame",    # 게임 exe 파일의 이름이 된다.
+    dest_base="Infinite Stairs",    # 게임 exe 파일의 이름이 된다.
     icon_resources=[(1, r"pico2d.ico")],
     other_resources = [(RT_MANIFEST, 1, (manifest_template % dict(prog="mygame", level="asInvoker")).encode("utf-8"))]
     )
@@ -95,7 +95,7 @@ py2exe_options = dict(
     )
 
 
-resources = " ".split()  # split()는 공백으로 문자들을 구분하는 함수
+resources = "".split()  # split()는 공백으로 문자들을 구분하는 함수
 
 if platform.architecture()[0] == '32bit':
     sdl_folder = './SDL2/x86/'

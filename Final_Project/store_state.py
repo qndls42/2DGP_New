@@ -63,6 +63,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             del title_state.bgm
             del bgm
+            del coin_sound
             game_framework.quit()
         else:
             if event.type == SDL_KEYDOWN:
