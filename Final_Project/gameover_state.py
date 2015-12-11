@@ -10,10 +10,11 @@ name = "GameOverState"
 
 score_board = None
 game_over_sound = None
-best_score = -1
+best = None
+best_score = 0
 
 def enter():
-    global score_board, game_over_sound, best_score
+    global score_board, game_over_sound, best_score, best
 
     store_state.sel_x = 380
     store_state.sel_y = 160
@@ -22,6 +23,8 @@ def enter():
     game_over_sound = load_wav('game_over.wav')
     game_over_sound.set_volume(60)
     game_over_sound.play(1)
+
+    best = load_image('best.png')
 
     if main_state.DownCnt > best_score:
         best_score = main_state.DownCnt
@@ -79,8 +82,12 @@ def draw():
         for i in range(main_state.score_check(main_state.DownCnt)):
             store_state.Num_image.clip_draw(store_state.Num[i] * 21, 0, 21, 25, (400 + int(main_state.score_check(main_state.DownCnt) / 2) * 21) - (i * 21), 350)
 
+    best.draw(400, 290)
+    if main_state.score_check(best_score) == 0:
+        store_state.Num_image.clip_draw(0, 0, 21, 25, 400, 250)
     for i in range(main_state.score_check(best_score)):
-            store_state.Num_image.clip_draw(store_state.Num[i] * 21, 0, 21, 25, (400 + int(main_state.score_check(main_state.DownCnt) / 2) * 21) - (i * 21), 250)
+            store_state.Num_image.clip_draw(store_state.Num[i] * 21, 0, 21, 25, (400 + int(main_state.score_check(best_score) / 2) * 21) - (i * 21), 250)
+
     update_canvas()
     pass
 
